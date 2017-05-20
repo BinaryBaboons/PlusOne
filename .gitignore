@@ -1,0 +1,6 @@
+node_modules/
+
+
+# Secret stuff
+.env
+dist/
