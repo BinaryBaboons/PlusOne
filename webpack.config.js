@@ -7,12 +7,9 @@ module.exports = {
     './client/src/index.jsx',
   ],
   output: {
-<<<<<<< HEAD
+
     path: path.join(__dirname, '/client/dist'),
 
-=======
-    path: path.join(__dirname, 'client/dist'),
->>>>>>> f7501673b58269be7107a54f93f167a29192fca5
     filename: 'bundle.js',
     publicPath: '/static/'
   },
