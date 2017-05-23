@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { render } from 'react-dom';
+<<<<<<< HEAD
 import { hashHistory, Route, Switch } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
@@ -29,6 +30,9 @@ const store = createStore(
   }),
   applyMiddleware(middleware)
 );
+=======
+import App from './Components/AppComponent/App.jsx';
+>>>>>>> refactor(browser): changed the file structure to be uniform to follow seperation of concerns and eas
 
 render(
   <Provider store={store}>

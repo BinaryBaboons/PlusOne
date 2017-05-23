@@ -1,32 +1,50 @@
+html,
+body {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    /*background: red;*/
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
 #profile {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
+
 .profileTabs {
-  display: flex;
-  justify-content: center !important;
-  height: 50vh;
+    display: flex;
+    justify-content: center !important;
+    height: 50vh;
 }
+
 .profileData {
-  height: 75%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: blue;
-  color: white;
-  border-radius: .28571429rem;
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: blue;
+    color: white;
+    border-radius: .28571429rem;
 }
 
 .profilePicture {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
+
 .userInfo {
-  color: white !important;
+    color: white !important;
 }
+
 .userBio {
-  border-radius: 10px;
+    border-radius: 10px;
 }
