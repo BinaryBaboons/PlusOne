@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import UserProfile from '../UserComponent/UserProfile.jsx';
-import MenuBar from '../MenuComponent/MenuBar.jsx';
+import UserProfile from '../User/UserProfile.jsx';
+import MenuBar from '../Menu/MenuBar.jsx';
 import css from './app.css';
 import {Route, Router} from 'react-router';
 

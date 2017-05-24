@@ -5,8 +5,8 @@ import 'semantic-ui-react';
 // Import React Components
 import React from 'react';
 import { render } from 'react-dom';
-import App from './Components/AppComponent/App.jsx';
-import Events from './Components/EventsComponent/Events.jsx'
+import App from './Components/App/App.jsx';
+import Events from './Components/Events/Events.jsx'
 import {
   HashRouter,
   Route,
