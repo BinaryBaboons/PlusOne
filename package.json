@@ -58,10 +58,15 @@
     "bookshelf": "^0.10.3",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
+    "es6-promise": "^4.1.0",
     "express": "^4.15.3",
     "express-session": "^1.15.2",
     "flexboxgrid": "^6.3.1",
+<<<<<<< HEAD
     "history": "^4.6.1",
+=======
+    "isomorphic-fetch": "^2.2.1",
+>>>>>>> v1.0/renderFakeEvents/getDataOnEventPage
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
@@ -75,6 +80,7 @@
     "react-dom": "^15.5.4",
     "react-flexbox-grid": "^1.1.3",
     "react-redux": "^5.0.5",
+    "react-redux-fetch": "^0.10.1",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^4.0.8",

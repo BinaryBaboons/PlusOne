@@ -4,9 +4,20 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { render } from 'react-dom';
+<<<<<<< HEAD
+<<<<<<< HEAD
 import { hashHistory, Route, Switch } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
+=======
+import App from './Components/App/App.jsx';
+import Events from './Components/Events/Events.jsx'
+import {
+  HashRouter,
+  Route,
+  Link
+} from 'react-router-dom';
+>>>>>>> v1.0/renderFakeEvents/getDataOnEventPage
 
 
 // Import Local Components
@@ -29,6 +40,9 @@ const store = createStore(
   }),
   applyMiddleware(middleware)
 );
+=======
+import App from './Components/AppComponent/App.jsx';
+>>>>>>> refactor(browser): changed the file structure to be uniform to follow seperation of concerns and eas
 
 render(
   <Provider store={store}>
