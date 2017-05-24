@@ -5,9 +5,19 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { render } from 'react-dom';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { hashHistory, Route, Switch } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
+=======
+import App from './Components/App/App.jsx';
+import Events from './Components/Events/Events.jsx'
+import {
+  HashRouter,
+  Route,
+  Link
+} from 'react-router-dom';
+>>>>>>> v1.0/renderFakeEvents/getDataOnEventPage
 
 
 // Import Local Components
