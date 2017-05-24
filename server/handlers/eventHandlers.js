@@ -1,6 +1,7 @@
 const db = require('../config/config');
 const Event = require('../models/event');
 const Attendee = require('../models/attendee.js');
+const eventUtils = require('../utils/eventUtils');
 
 module.exports = {
 
@@ -51,7 +52,7 @@ module.exports = {
 
   getEvent: (req, res) => {
     const eventId = req.params.eventId;
-    Event.where('id', eventId).fetch()
+    Event.where('id', eventId).fetch({ withRelated: 'users' })
       .then((model) => {
         res.send(model);
       })
@@ -62,7 +63,7 @@ module.exports = {
     Event.where('id', req.params.eventId).fetch()
       .then((model) => {
         if (!model) {
-          res.status(404).send()
+          res.status(404).send();
         } else {
           return model.save(req.body, { patch: true });
         }
@@ -106,8 +107,14 @@ module.exports = {
         }
         return model.save({ flag }, { patch: true });
       })
-    .then((model) => {
-      res.send(model);
-    });
+      .then((updatedAtt) => {
+        // Check if approved attendees fills up the event
+        // if so, switch `full` on the event to true
+        eventUtils.updateEventFull(updatedAtt.get('event_id'));
+        return updatedAtt;
+      })
+      .then((model) => {
+        res.send(model);
+      });
   },
 };
