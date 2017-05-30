@@ -1,12 +1,15 @@
 const db = require('../config/config');
 const Event = require('../models/event');
 const Attendee = require('../models/attendee.js');
+const eventUtils = require('../utils/eventUtils');
+const mail = require('../utils/mail');
 
 module.exports = {
 
   createEvent: (req, res) => {
     const eventObj = req.body;
     if (!['title', 'description', 'date_time'].every(k => k in eventObj)) {
+      console.log('Incomplete form');
       res.status(400).send();
     } else {
       // Assumes the category field is an integer value referencing a category ID.
@@ -36,7 +39,7 @@ module.exports = {
     * satisfying that search.
     */
     new Event().fetchPage({
-      pageSize: 5,
+      pageSize: 15,
       page: req.query.page || 1,
     })
       .then((models) => {
@@ -51,7 +54,7 @@ module.exports = {
 
   getEvent: (req, res) => {
     const eventId = req.params.eventId;
-    Event.where('id', eventId).fetch()
+    Event.where('id', eventId).fetch({ withRelated: 'users' })
       .then((model) => {
         res.send(model);
       })
@@ -62,7 +65,7 @@ module.exports = {
     Event.where('id', req.params.eventId).fetch()
       .then((model) => {
         if (!model) {
-          res.status(404).send()
+          res.status(404).send();
         } else {
           return model.save(req.body, { patch: true });
         }
@@ -93,6 +96,7 @@ module.exports = {
     })
     .save()
     .then((model) => {
+      mail.emailCreator(req.params.eventId, req.session.user_id);
       res.send(model);
     });
   },
@@ -106,8 +110,15 @@ module.exports = {
         }
         return model.save({ flag }, { patch: true });
       })
-    .then((model) => {
-      res.send(model);
-    });
+      .then((updatedAtt) => {
+        eventUtils.updateEventFull(updatedAtt.get('event_id'));
+        if (updatedAtt.get('flag') === 'approved') {
+          mail.emailApprovedUser(updatedAtt.get('user_id'), updatedAtt.get('event_id'));
+        }
+        return updatedAtt;
+      })
+      .then((model) => {
+        res.send(model);
+      });
   },
 };
