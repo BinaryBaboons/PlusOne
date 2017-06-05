@@ -3,7 +3,7 @@ const eventRouter = require('express').Router();
 const eventUtils = require('../utils/eventUtils.js')
 const Event = require('../models/event');
 const eventHandlers = require('../handlers/eventHandlers.js')
-
+// const Modal = require('../../src/components/Modal.jsx')
 // Create route handles for events
 
 eventRouter.route('/')
@@ -14,7 +14,8 @@ eventRouter.route('/join/:eventId')
   .post(eventHandlers.joinEvent);
 
 eventRouter.route('/attendees')
-  .put(eventHandlers.editAttendees);
+  .put(eventHandlers.editAttendees)
+  .delete(eventHandlers.deleteAttendee);
 
 eventRouter.route('/:eventId')
   .get(eventHandlers.getEvent)

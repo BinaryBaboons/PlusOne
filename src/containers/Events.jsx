@@ -1,79 +1,122 @@
 // Import React and Redux Dependencies
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import Waypoint from 'react-waypoint';
+import { filter } from 'lodash/collection';
+import { escapeRegExp } from 'lodash/string';
+
+// local dependencies
+import { Container, Search, Grid, Divider, Modal } from 'semantic-ui-react';
+import MenuBar from '../components/MenuBar';
+import GridEvent from '../components/GridEvent';
+import Event from '../components/Event';
+import { fetchEvents } from '../actions/eventActions';
+import { joinEvent } from '../actions/actions';
+import '../../public/styles/events.scss';
 
 class Events extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      events: [],
-      visibleEvents: [],
-      user: {
-        userId: 42691,
-        username: 'Guest',
-        age: 18,
-        email: 'guest@lfm.io',
-        bio: "You're our guest! Make yourself at home!",
-        cell: '555-555-5555',
-        created_at: '2017-05-22',
-        authenticated: false,
-      },
-      loadingAnimation: false,
+      modalFocus: false,
+      page: 1,
     };
+
+    this.handleElementClick = this.handleElementClick.bind(this);
   }
 
   componentWillMount() {
-    // Check if the User is Logged In
-    fetch('/auth/loggedIn', { credentials: 'include' })
-      // If so, Update the State with the User's Information
-      .then((res) => {
-        console.log('hey');
-        return res.json();
-      })
-      .then((data) => {
-        console.log('hi');
-        if (data !== false) {
-          this.setState({
-            ...this.state,
-            user: {
-              userId: res.id,
-              username: res.display_name,
-              age: res.age,
-              email: res.email,
-              bio: res.bio,
-              cell: res.contact_number,
-              created_at: res.created_at,
-              authenticated: true,
-            },
-          });
-        } else {
-          // If not, Redirect the User to the Splash Page
-          window.location = '/#/home';
-        }
-      })
-      .catch((err) => {
-        console.error('Authentication Error:', err);
-      });
+    this.resetComponent();
   }
-  // To-Do:
-    // Render a Default Events List
-    // Render a User-Tailored Events List
-    //
 
-  render() {
+  getMoreEvents = () => {
+    this.setState({ page: this.state.page + 1});
+    this.props.fetchEvents(this.state.page);
+    console.log(this.state.page);
+  }
+
+  clearModalFocus = () => this.setState({ modalFocus: false })
+
+  handleElementClick = (event) => {
+    this.setState({ modalFocus: event });
+  }
+
+  handleJoinEvent = (user, event) => this.props.joinEvent(user, event);
+
+  resetComponent = () => this.setState({ isLoading: false, results: [], value: '' });
+
+  handleResultSelect = (e, result) => this.setState({ value: result.description })
+
+  handleSearchChange = (e, value) => {
+    this.setState({ isLoading: true, value });
+
+    setTimeout(() => {
+      if (this.state.value.length < 1) return this.resetComponent();
+
+      const re = new RegExp(escapeRegExp(this.state.value), 'i');
+      const isMatch = result => re.test(result.description);
+
+      this.setState({
+        isLoading: false,
+        results: filter(this.props.eventsList, isMatch),
+      });
+    }, 500);
+  }
+
+  render = () => {
+    const { eventsList, user } = this.props;
+    const { isLoading, value, results } = this.state;
+
     return (
-      <div>
-        <h1> Events go Hurr </h1>
-      </div>
+      <Container className="events-page" >
+        <MenuBar />
+        <Search
+          loading={isLoading}
+          onSearchChange={this.handleSearchChange}
+          results={results}
+          value={value}
+          {...this.props}
+        />
+        <Divider />
+        <Grid centered columns={2} stackable stretched >
+          {eventsList === undefined ? null : eventsList.map((event) => {
+            return (
+              <GridEvent key={event.id} event={event} handleElementClick={this.handleElementClick} />
+            );
+          })}
+        </Grid>
+        <Modal
+          dimmer="blurring"
+          basic
+          onClose={() => this.clearModalFocus()}
+          size="small"
+          open={Boolean(this.state.modalFocus)}
+        >
+          <Event
+            parent="Grid"
+            user={user}
+            event={this.state.modalFocus}
+            deleteClick=""
+            changeModalFocusClick=""
+            joinEvent={this.handleJoinEvent}
+          />
+        </Modal>
+        <Waypoint
+          onEnter={() => this.getMoreEvents()}
+        />
+      </Container>
     );
   }
 }
 
-const mapStatetoProps = ({ events }) => ({
-  events: events.eventsList,
-  visibleEvents: events.visibleEvents,
+const mapStatetoProps = ({ events, user }) => ({ 
+  eventsList: events.eventsList,
+  user,
 });
 
-
-export default connect(mapStatetoProps, {})(Events);
+export default connect(
+  mapStatetoProps,
+  {
+    fetchEvents,
+    joinEvent,
+  })(Events);
