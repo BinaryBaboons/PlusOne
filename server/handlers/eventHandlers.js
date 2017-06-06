@@ -1,20 +1,75 @@
+const moment = require('moment');
+const rp = require('request-promise');
 const db = require('../config/config');
 const Event = require('../models/event');
 const Attendee = require('../models/attendee.js');
 const eventUtils = require('../utils/eventUtils');
 const mail = require('../utils/mail');
 
+const handleZipCodeSearch = (req, res) => {
+  const { zipCode } = req.query;
+  const reqOptions = {
+    uri: `https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${zipCode}&key=${process.env.GOOGLE_GEOLOCATION_API_KEY}`, 
+    json: true,
+  };
+  rp(reqOptions)
+    .then((resp) => {
+      console.log('This is the Google response when looking up zip code', zipCode)
+      console.log(resp)
+      if (resp.results.length === 0) Promise.reject('Zip code could not be found.')
+      return resp.results[0].geometry.location;
+    })
+    .then((coords) => {
+      latLngSearch(coords, req, res);
+    });
+};
+
+const latLngSearch = ({ lat, lng }, req, res) => {
+  const dist = req.query.dist || 1000;
+  console.log('dist is', dist)
+  const bounds = eventUtils.boundingBox(lat, lng, parseFloat(dist));
+  new Event().where({ full: 0 })
+    .query(((qb) => {
+      // if (bounds) {
+        qb.where('lat', '<', bounds.upperLat)
+          .andWhere('lat', '>', bounds.lowerLat)
+          .andWhere('lng', '<', bounds.upperLng)
+          .andWhere('lng', '>', bounds.lowerLng)
+          .andWhere('date_time', '>', `'${moment.utc().format().replace('T', ' ')}'`);
+      // } else {
+      //   qb.where('date_time', '>', `'${moment.utc().format().replace('T', ' ')}'`);
+      // }
+    }))
+    .orderBy('date_time', 'ASC')
+    .fetchPage({
+      pageSize: 10,
+      page: req.query.page || 1,
+    })
+    .then((models) => {
+      console.log(req.query.page);
+      res.send(models);
+    });
+};
+
 module.exports = {
 
   createEvent: (req, res) => {
+    console.log('Create Event:', req.body);
     const eventObj = req.body;
     if (!['title', 'description', 'date_time'].every(k => k in eventObj)) {
       console.log('Incomplete form');
+      console.log(eventObj);
       res.status(400).send();
     } else {
-      // Assumes the category field is an integer value referencing a category ID.
+      const { lat, lng } = eventObj.geoData || { lat: null, lng: null };
+      delete eventObj.geoData;
+      eventObj.lat = lat;
+      eventObj.lng = lng;
       eventObj.full = false;
-      new Event(eventObj).save()
+      eventObj.img_url = "https://blog-fr.sportroops.com/wp-content/uploads/2014/02/lebron-james-photobombing-miami-heat-nba-basket-2-630x352.jpg";
+      eventObj.habitat = "outdoors";
+      console.log(eventObj);
+      return new Event(eventObj).save()
         .then((model) => {
           console.log('New event', model.attributes);
           new Attendee({
@@ -26,25 +81,56 @@ module.exports = {
         })
         .then((model) => {
           res.send(model);
+        })
+        .catch((err) => {
+          console.error('Event Creation Failed:', err);
         });
     }
   },
 
   getEventList: (req, res) => {
-    /*
-    * takes a query param: page. Return 5 events at a time.
-    * Increase to 50 once things are working.
-    *
-    * Add a query param for category or tags? Return 50 events
-    * satisfying that search.
-    */
-    new Event().fetchPage({
-      pageSize: 15,
-      page: req.query.page || 1,
-    })
-      .then((models) => {
-        res.send(models);
-      });
+    /**
+     * takes the following query params:
+     * page: returns the next page of results
+     * lat,
+     * lng,
+     * dist: Latitude, longitude, and distance, for limiting by proximity
+     *
+     * Add a query param for category or tags? Return 50 events
+     * satisfying that search.
+     */
+
+    // Calculates boundries based on geo-data, if available.
+    const { lat, lng, dist, zipCode } = req.query;
+    const bounds = lat && lng && dist
+    ? eventUtils.boundingBox(parseFloat(lat), parseFloat(lng), parseFloat(dist))
+    : undefined;
+
+    if (zipCode) {
+      handleZipCodeSearch(req, res);
+    } else {
+      new Event().where({ full: 0 })
+        .query(((qb) => {
+          if (bounds) {
+            qb.where('lat', '<', bounds.upperLat)
+              .andWhere('lat', '>', bounds.lowerLat)
+              .andWhere('lng', '<', bounds.upperLng)
+              .andWhere('lng', '>', bounds.lowerLng)
+              .andWhere('date_time', '>', `'${moment.utc().format().replace('T', ' ')}'`);
+          } else {
+            qb.where('date_time', '>', `'${moment.utc().format().replace('T', ' ')}'`);
+          }
+        }))
+        .orderBy('date_time', 'ASC')
+        .fetchPage({
+          pageSize: 10,
+          page: req.query.page || 1,
+        })
+        .then((models) => {
+          console.log(req.query.page);
+          res.send(models);
+        });
+    }
   },
 
 /**
@@ -84,21 +170,29 @@ module.exports = {
         return model.destroy();
       })
       .then((model) => {
-        res.send(model);
+        Attendee.where('event_id', parseInt(req.params.eventId, 10)).fetchAll()
+          .then((attendees) => {
+            if (!attendees) res.status(404).send();
+            return attendees.invokeThen('destroy')
+              .then(arr => res.send({ event: model, arr }));
+          });
       });
   },
 
   joinEvent: (req, res) => {
+    console.log('Event_id', req.params.eventId);
+    console.log('User_id', req.body.id);
     new Attendee({
-      event_id: req.params.eventId,
-      user_id: req.session.user_id,
+      event_id: parseInt(req.params.eventId, 10),
+      user_id: parseInt(req.body.id, 10),
       flag: 'pending',
     })
     .save()
     .then((model) => {
-      mail.emailCreator(req.params.eventId, req.session.user_id);
+      mail.emailCreator(req.params.eventId, req.body.userId);
       res.send(model);
-    });
+    })
+    .catch(err => console.error(err));
   },
 
   editAttendees: (req, res) => {
@@ -120,5 +214,17 @@ module.exports = {
       .then((model) => {
         res.send(model);
       });
+  },
+
+  deleteAttendee: (req, res) => {
+    const model = req.body;
+    new Attendee(model).fetch()
+      .then((model) => {
+        if (!model) {
+          res.status(404).send();
+        }
+        return model.destroy();
+      })
+      .then(model => res.send(model));
   },
 };

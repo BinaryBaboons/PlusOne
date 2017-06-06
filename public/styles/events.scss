@@ -1,0 +1,17 @@
+@import '_variables.scss';
+
+body {
+  width: $pageWidth;
+  height: $pageHeight;
+}
+
+.events-page {
+  width: $pageWidth;
+  height: $pageHeight;
+  background: $transparent;
+}
+
+.wrapper {
+  width: $pageWidth;
+  height: $pageHeight;
+}

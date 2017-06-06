@@ -1,9 +1,8 @@
 // Put all routing for users here
 const userRouter = require('express').Router();
-const userUtils = require('../utils/userUtils.js')
+const userUtils = require('../utils/userUtils.js');
 
 const User = require('../models/user');
-
 
 // Create route handles for users
 
@@ -52,6 +51,7 @@ userRouter.route('/:userId')
    * Respond with different information if the request is made by the user, another user,
    * or someone who is not logged in?
    */
+
   .get((req, res) => {
       new User({id: req.params.userId}).fetch()
         .then(model => {

@@ -52,12 +52,14 @@ db.knex.schema.hasTable('event').then( exists => {
           event.increments('id').primary();
           event.string('title').notNullable();
           event.string('description').notNullable();
-          event.date('date_time', 100).notNullable();
+          event.dateTime('date_time', 100).notNullable();
           event.boolean('full');
           event.integer('needs');
           event.string('category').references('category.id');
           event.string('img_url', 250);
           event.string('location');
+          event.decimal('lat', 10, 8);
+          event.decimal('lng', 11, 8);
           event.integer('skill_level');
           event.string('habitat', 60);
           event.timestamps();
@@ -139,6 +141,19 @@ db.knex.schema.hasTable('category').then( exists => {
             category.increments('id').primary();
             category.string('category');
             category.timestamps();
+        }).then( table => {
+            console.log('Created new "category" table', table);
+        });
+    }
+});
+
+db.knex.schema.hasTable('messages').then( exists => {
+    if (!exists) {
+        db.knex.schema.createTable('messages', messages => {
+            messages.increments('id').primary();
+            messages.integer('sender_id').references('user.id');
+            messages.integer('recipient_id').references('user.id');
+            messages.string('message');
         }).then( table => {
             console.log('Created new "category" table', table);
         });

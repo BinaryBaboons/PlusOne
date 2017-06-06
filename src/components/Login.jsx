@@ -1,76 +1,75 @@
 // Import React Dependencies
-// Import React Dependencies
-import React from 'react';
-
+import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 // Import Semantic-UI Components
-import { Grid, Container, Header, Reveal, Image, Divider } from 'semantic-ui-react';
+import { Grid, Header, Button, Form } from 'semantic-ui-react';
 
 // Import Local Dependencies
+import LoginModal from './LoginModal.jsx';
+
 import '../../public/styles/login.scss';
 
-class Login extends React.Component {
+
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
       showAbout: false,
+      zipCode: undefined,
     };
+    this.showEvents = this.showEvents.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
-  componentDidMount() {
-    const video = document.querySelector('.fullscreen-video');
-    const container = document.querySelector('.video-container');
-    let newWidth;
-    let newHeight;
-    const setVideoDimensions = () => {
-      const w = video.videoWidth;
-      const h = video.videoHeight;
-      const videoRatio = (w / h).toFixed(2);
-      const containerStyles = window.getComputedStyle(container);
-      const minW = parseInt(containerStyles.getPropertyValue('width'));
-      const minH = parseInt(containerStyles.getPropertyValue('height'));
-      const widthRatio = minW / w;
-      const heightRatio = minH / h;
-      
-      if (widthRatio > heightRatio) {
-        newWidth = minW;
-        newHeight = Math.ceil(newWidth / videoRatio);
-      } else {
-        newHeight = minH;
-        newWidth = Math.ceil(newHeight * videoRatio);
-      }
-      video.style.width = newWidth.concat('px');
-      video.style.height = newHeight.concat('px');
-    };
 
-    video.addEventListener('loadedmetadata', setVideoDimensions, false);
-    window.addEventListener('resize', setVideoDimensions, false);
+  handleInputChange(event) {
+    const value = event.target.value.split('').filter(char => !isNaN(parseInt(char, 10))).slice(0, 5).join('');
+    this.setState({
+      zipCode: value,
+    });
   }
+
+  showEvents(event) {
+    event.preventDefault();
+    window.location = `/#/events/${this.state.zipCode}`;
+  }
+
   render() {
     return (
-      <div className="page-container">
-        <Grid width={16} stretched>
-          <video loop muted autoPlay className="fullscreen-video" width="300" height="200" >
+      <div className="login-container">
+        <Grid width={16} stretched className="login-background-grid">
+          <video loop muted autoPlay className="login-video" width="300" height="200" >
             <source src="https://i.imgur.com/ee9tRfR.mp4" type="video/mp4" />
           </video>
         </Grid>
-        <Grid width={16} stretched>
+        <Grid width={16} stretched className="login-foreground-grid">
           {/* This Cinemagraph was submitted to reddit.com/r/cinemagraphs by user, rbojunglist */}
           <Grid columns={1} centered verticalAlign="middle">
             <Grid.Column width={16}>
-              <Header size="huge" textAlign="center">
-                <Header.Content className="header">
+              <Header size="huge" textAlign="center" className="login-header">
+                <Header.Content className="login-header">
                   LFM
                 </Header.Content>
-                <Header.Subheader className="subHeader">
+                <Header.Subheader className="subHeader" className="login-subHeader">
                   Find people. Fill your group. Do the things you love.
                 </Header.Subheader>
               </Header>
               <Grid.Row>
-                <a href="/auth/facebook" className="facebook-login-button">
-                  <Image verticalAlign="middle" shape="rounded" src="https://www.transparenttextures.com/patterns/asfalt-light.png" centered size="small" className="facebook-login-button" />
-                </a>
-                <a href="/auth/google" className="google-login-button">
-                  <Image verticalAlign="middle" src="https://www.transparenttextures.com/patterns/asfalt-light.png" shape="rounded" centered size="small" className="google-login-button" />
-                </a>
+                <Form>
+                  <Form.Field>
+                    <input
+                      value={this.state.zipCode}
+                      placeholder="Enter a zip code to get started"
+                      onChange={this.handleInputChange}
+                    />
+                  </Form.Field>
+                  <Button
+                    disabled={this.state.zipCode ? this.state.zipCode.length < 5 : true}
+                    onClick={this.showEvents}
+                    className="splash-button"
+                  >
+                    Let's Go!
+                  </Button>
+                </Form>
               </Grid.Row>
             </Grid.Column>
           </Grid>
