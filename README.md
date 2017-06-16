@@ -10,7 +10,7 @@ A social networking tool to fill the gaps in your event roster. Create an event 
 - Chat feature for communication with event creators or applicants.
 - Google or Facebook user verification.
 
-##Preview
+## Preview
 ![Gif of application](/public/assets/EleventHour.gif)
 
 ## Tech Stack
