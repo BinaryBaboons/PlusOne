@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
+import { Input } from 'semantic-ui-react';
 
 class ChatInput extends Component {
   constructor(props) {
     super(props);
     this.state = { chatInput: '' };
-
     // React ES6 does not bind 'this' to event handlers by default
     this.submitHandler = this.submitHandler.bind(this);
     this.textChangeHandler = this.textChangeHandler.bind(this);
@@ -21,15 +21,20 @@ class ChatInput extends Component {
     this.props.onSend(this.state.chatInput);
   }
 
-  textChangeHandler(event)  {
+  textChangeHandler(event) {
     this.setState({ chatInput: event.target.value });
+
+    this.props.onChange(this.state.chatInput);
   }
 
   render() {
     return (
       <form className="chat-input" onSubmit={this.submitHandler}>
-        <input type="text"
+        <Input
+          type="text"
+          size="large"
           onChange={this.textChangeHandler}
+          className="chat-input"
           value={this.state.chatInput}
           placeholder="Write a message..."
           required />

@@ -2,12 +2,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Waypoint from 'react-waypoint';
-import { filter } from 'lodash/collection';
-import { escapeRegExp } from 'lodash/string';
+import SearchInput, { createFilter } from 'react-search-input';
 import PropTypes from 'prop-types';
 
 // local dependencies
-import { Container, Search, Grid, Divider, Modal } from 'semantic-ui-react';
+import { Container, Grid, Divider, Modal } from 'semantic-ui-react';
 import MenuBar from '../components/MenuBar';
 import GridEvent from '../components/GridEvent';
 import Event from '../components/Event';
@@ -20,70 +19,84 @@ class Events extends Component {
     super(props);
     this.state = {
       modalFocus: false,
-      page: 0,
+      joinConfirm: false,
       zipCode: props.match.params.zipCode,
+      page: 0,
+      searchTerm: '',
     };
 
     this.handleElementClick = this.handleElementClick.bind(this);
   }
 
-  componentWillMount() {
-    this.resetComponent();
+  componentDidUpdate() {
+    this.props.eventsList.forEach((event) => {
+      fetch(`/events/${event.id}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then((data) => {
+          data.users.forEach((user) => {
+            if (user.role === 'creator') {
+              event.creator = user;
+            }
+          });
+        });
+    });
   }
 
   getMoreEvents = () => {
-    const newPage = this.state.page + 1
+    const newPage = this.state.page + 1;
     this.setState({ page: newPage });
     this.props.fetchEvents(this.state.zipCode, newPage);
-    console.log(this.state.page);
   }
 
-  clearModalFocus = () => this.setState({ modalFocus: false })
+// Related to views
+  clearModalFocus = () => this.setState({ modalFocus: false, eventCreator: {} })
 
   handleElementClick = (event) => {
     this.setState({ modalFocus: event });
+    fetch(`/events/${event.id}`, { credentials: 'include' })
+      .then(res => res.json())
+      .then((data) => {
+        data.users.forEach((user) => {
+          if (user.role === 'creator') {
+            this.setState({
+              eventCreator: user,
+            });
+          }
+        });
+      })
+      .catch(err => console.error(err));
   }
 
   handleJoinEvent = (user, event) => this.props.joinEvent(user, event);
 
-  resetComponent = () => this.setState({ isLoading: false, results: [], value: '' });
+  toggleJoin = () => this.setState(prevState => ({ joinConfirm: !prevState.joinConfirm }))
 
-  handleResultSelect = (e, result) => this.setState({ value: result.description })
+  handleConfirm = () => this.setState({ joinConfirm: false })
 
-  handleSearchChange = (e, value) => {
-    this.setState({ isLoading: true, value });
+// Related to search
 
-    setTimeout(() => {
-      if (this.state.value.length < 1) return this.resetComponent();
-
-      const re = new RegExp(escapeRegExp(this.state.value), 'i');
-      const isMatch = result => re.test(result.description);
-
-      this.setState({
-        isLoading: false,
-        results: filter(this.props.eventsList, isMatch),
-      });
-    }, 500);
-  }
+  searchUpdated = term => this.setState({ searchTerm: term });
 
   render = () => {
     const { eventsList, user } = this.props;
-    const { isLoading, value, results } = this.state;
 
+    const KEYS_TO_FILTER = ['title', 'date_time', 'description', 'tags', 'catagories', 'location'];
     return (
       <div className="wrapper">
         <MenuBar />
         <Container className="events-page" >
-          <Search
-            loading={isLoading}
-            onSearchChange={this.handleSearchChange}
-            results={results}
-            value={value}
-            {...this.props}
+          <Divider />
+          <SearchInput
+            className="search-input"
+            onChange={this.searchUpdated}
+            throttle={350}
+            fuzzy={true}
           />
           <Divider />
           <Grid centered columns={3} stackable stretched >
-            {eventsList === undefined ? null : eventsList.map(event => (
+            {eventsList === undefined ? null : eventsList
+            .filter(createFilter(this.state.searchTerm, KEYS_TO_FILTER))
+            .map(event => (
               <GridEvent
                 key={event.id}
                 event={event}
@@ -93,6 +106,7 @@ class Events extends Component {
           </Grid>
           <Modal
             dimmer="blurring"
+            className="normal-modal"
             basic
             onClose={() => this.clearModalFocus()}
             size="small"
@@ -103,13 +117,13 @@ class Events extends Component {
               user={user}
               event={this.state.modalFocus}
               deleteClick=""
-              changeModalFocusClick=""
+              changeModalFocusClick={this.clearModalFocus}
               joinEvent={this.handleJoinEvent}
+              toggleJoin={this.toggleJoin}
+              joinConfirm={this.state.joinConfirm}
             />
           </Modal>
-          <Waypoint
-            onEnter={() => this.getMoreEvents()}
-          />
+          <Waypoint onEnter={() => this.getMoreEvents()} />
         </Container>
       </div>
     );

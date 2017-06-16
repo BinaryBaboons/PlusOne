@@ -1,26 +1,117 @@
 // CSS for Login.jsx
 
 // Variables
-$pageWidth: 100vw;
-$pageHeight: 100vh;
-$transparent: rgba(0, 0, 0, 0);
-$blue: #004FFF;
-$orange: #FC8000;
+@import '_variables.scss';
 
 body {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
 }
 
 .login-container {
   width: $pageWidth;
   height: $pageHeight;
-  display: flex;
+  display: block;
+  vertical-align: bottom;
   align-items: center;
   justify-content: center;
+}
+.topHalf {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.zipcode-field {
+  width: 33% !important;
+  text-align: center !important;
+}
+.login-down-arrow {
+  color: $offwhite !important;
+  position: absolute;
+  top: 85%;
+}
+.about-description {
+  font-size: 20px;
+  font-weight: 400;
+}
+.logo-v {
+  font-size: 140px;
+  transform: rotate(-18deg);
+  color: $salmon;
+  text-shadow: -1px 0 $blue, 0 1px $blue, 1px 0 $blue, 0 -1px $blue;
+}
+.logo-event {
+  text-shadow: -1px 0 $offwhite, 0 1px $offwhite, 1px 0 $offwhite, 0 -1px $offwhite;
+}
+.team {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.team-member {
+  display: inline-block;
+  padding: 0px 5px;
+}
+.devName {
+  color: white;
+}
+.team-photo {
+  width: 100px;
+  height: auto;
+  border-radius: 10px;
+}
+.about {
+  height: 30vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-us {
+  color: black;
+  background: $offwhite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: $pageWidth;
+  height: 100vh;
+  font-family: 'Lato';
+}
+.about-description {
+  font-size: 20px;
+  font-weight: 400;
+}
+.team {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.team-member {
+  display: inline-block;
+  padding: 0px 5px;
+}
+.devName {
+  color: white;
+}
+.team-photo {
+  width: 100px;
+  height: auto;
+  border-radius: 10px;
+}
+.about {
+  height: 30vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .login-video {
@@ -35,26 +126,34 @@ body {
  padding: 0 !important;
 }
 
-.ui.header.login-header .content{
-  vertical-align: baseline;
-}
-
 .ui.grid.login-foreground-grid {
-  font-family: 'Viga';
+  font-family: $graduate;
   display: flex;
   align-items: center;
 }
 
 .login-header {
   font-size: 120px;
-  font-family: 'Viga';  
-  color: $blue;
-  text-shadow: 0.5px 0 black, 0 0.5px black, 0.5px 0 black, 0 0.5px black;
+  font-family: $graduate;  
+  color: $lightblue;
+  text-shadow: -1px 0 $offwhite, 0 1px $offwhite, 1px 0 $offwhite, 0 -1px $offwhite;
+  vertical-align: baseline !important;
 }
 
 .ui.header .sub.header.login-subHeader {
-  font-family: 'Viga';
+  font-family: $lato;
   font-size: 24px;
-  color: #FEFEFE;
-  text-shadow: -0.5px 0 black, 0 0.5px black, 0.5px 0 black, 0 -0.5px black;
+  color: $salmon;
+  text-shadow: -0.5px 0 $blue, 0 0.5px $blue, 0.5px 0 $blue, 0 -0.5px $blue;
+}
+.footer-divider {
+  position: relative;
+  top: 25%;
+}
+
+.github-repo {
+  position: relative;
+  top: 20%;
+  display: flex;
+  align-items: center;
 }

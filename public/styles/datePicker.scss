@@ -22,6 +22,7 @@ $slider-fix: 20px;
     border-spacing: 0;
     table-layout: fixed;
     line-height: 0.25;
+    padding-bottom: 5px !important;
   }
 
   td {
@@ -160,7 +161,6 @@ $slider-fix: 20px;
   padding: 12px 15px;
   border-radius: 3px;
   border: 1px solid gray;
-  height: 250px;
 
   .options {
     width: 100%;
@@ -196,28 +196,14 @@ $slider-fix: 20px;
 
   .tab {
     display: none;
-    height: 310px;
 
     &.is-active {
       display: block;
     }
   }
 
-  .tabs {
-    margin-bottom: 11px;
-    height: 250px;
-  }
-
   .btn-save {
-    display: block;
-    margin-top: 10px;
-    width: 100%;
-    background-color: blue;
-    padding: 12px 0;
-    text-align: center;
-    color: #ffffff;
-    font-size: 16px;
-    border-radius: 3px;
+    display: none;
   }
 }
 

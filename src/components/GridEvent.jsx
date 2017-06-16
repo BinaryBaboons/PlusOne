@@ -6,33 +6,31 @@ import '../../public/styles/gridEvent.scss';
 
 function GridEvent(props) {
   const { event, handleElementClick } = props;
-
   const segmentStyle = {
     background: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .7)), url(${event.img_url}) no-repeat`,
     backgroundSize: '100%',
     transitionDuration: '1s',
   };
 
-
   return (
     <Grid.Column textAlign="left" className="box" onClick={() => handleElementClick(event)}>
       <div className="event-item" style={segmentStyle}>
         <div className="buffer">
           <Header className="event-title">
-            {event.title.slice(0, 20)}...
+            { event.title.slice(0, 20) }...
           </Header>
           <Divider fitted />
           <List divided horizontal size="tiny" relaxed="very">
             {Boolean(event.date_time) &&
               <List.Item className="event-item-meta event-item-date">
                 <List.Icon name="calendar" />
-                <List.Content> {moment(event.date_time).calendar()} </List.Content>
+                <List.Content> {moment(event.date_time).format('ll')} </List.Content>
               </List.Item>
             }
             {Boolean(event.location) &&
               <List.Item className="event-item-meta event-item-location">
                 <List.Icon name="location arrow" />
-                <List.Content> {event.location} </List.Content>
+                <List.Content> {event.location.slice(0, 18)}... </List.Content>
               </List.Item>
             }
             {Boolean(event.needs) &&

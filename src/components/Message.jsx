@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
+import '../../public/styles/chat.scss';
 
 class Message extends Component {
+
   render() {
-    // Was the message sent by the current user. If so, add a css class
+    const fromMe = this.props.id === this.props.sender ? 'bubble bubble--alt' : 'bubble'; 
     return (
-      <div className={`message`}>
-        <div className='username'>
-          { this.props.username }
-        </div>
-        <div className='message-body'>
+      <div className='chat-message'>
+        <div className={`message-body ${fromMe}`}>
           { this.props.message }
         </div>
       </div>
