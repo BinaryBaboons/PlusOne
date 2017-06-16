@@ -1,14 +1,14 @@
 # EleventHour
 
-A social networking tool to fill the gaps in your event roster. Create an event and let people signup so that you don't have to cancel your rec-league game or board night.
+A social networking tool to fill the gaps in your event roster. Create an event and let people signup so that you don't have to cancel your rec-league game or board game night.
 
 [Check it out!](http://www.eleventhour.io/)
 
 ## Key Features
 - Event filtering by your location
-- Real time weather data for more effective planning.
-- Chat feature for communication with event creators or applicants.
-- Google or Facebook user verification.
+- Real time weather data for more effective planning
+- Chat feature for communication with event creators or applicants
+- Google or Facebook user verification
 
 ## Preview
 ![Gif of application](/public/assets/EleventHour.gif)
