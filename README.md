@@ -11,7 +11,7 @@ A social networking tool to fill the gaps in your event roster. Create an event 
 - Google or Facebook user verification
 
 ## Preview
-![Gif of application](/public/assets/EleventHour.gif)
+![Gif of application](/public/assets/eleventhour.gif)
 
 ## Tech Stack
 - ReactJS / Redux
