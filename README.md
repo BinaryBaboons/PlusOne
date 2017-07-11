@@ -15,7 +15,7 @@ A social networking tool to fill the gaps in your event roster. Create an event 
 
 ## Tech Stack
 - ReactJS / Redux
-- NodeJJ / ExpressJS
+- NodeJS / ExpressJS
 - Socket.io
 - MySQL
 - Bookshelf / KnexJS
